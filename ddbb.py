@@ -11,6 +11,50 @@ def connect():
     )
     return conn
 
+def consultar_arboles_por_nombre(nombre):
+    conn = connect()
+    arboles = []
+    try:
+        cursor = conn.cursor()
+        query = """
+                SELECT * 
+                FROM arboles
+                WHERE lower(nombre) = lower(%s);
+                """
+        cursor.execute(query, (nombre,))
+        arboles = cursor.fetchall()
+
+    except Exception as e:
+        print(f"Error al obtener los arboles {e}")
+    finally:
+        if conn:
+            cursor.close()
+            conn.close()
+    print(arboles)
+    return arboles
+
+def consultar_arboles():
+    conn = connect()
+    arboles = []
+    try:
+        cursor = conn.cursor()
+        query = """
+                SELECT * 
+                FROM arboles;
+                """
+        cursor.execute(query)
+        arboles = cursor.fetchall()
+
+    except Exception as e:
+        print(f"Error al obtener los arboles {e}")
+    finally:
+        if conn:
+            cursor.close()
+            conn.close()
+    print(arboles)
+    return arboles
+
+
 def insertar_arbol(nombre, tipo, altura_promedio, fecha_plantacion):
     """
     Inserta un nuevo árbol en la base de datos.
@@ -48,3 +92,4 @@ def insertar_arbol(nombre, tipo, altura_promedio, fecha_plantacion):
 
 # Ejemplo de uso:
 # insertar_arbol("Pino", "Perenne", 30, "2005-03-15")
+consultar_arboles()
