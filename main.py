@@ -1,53 +1,31 @@
-import datetime
-
-import ddbb
-import librosddbb
 import flet as ft
+import formularioPage
+import consultasPage
 
-def main(page : ft.Page):
-    page.title = "CONTROL JARDÍN"
+def main(page: ft.Page):
+    page.title = "APP ARBOLES"
 
-    def abrir_selector(e):
-        date_picker.open = True
+    def route_change(e):
+        page.views.clear()
+        if page.route == "/formulario":
+            page.views.append(
+                ft.View(
+                    route = "/formulario",
+                    controls = [formularioPage.main(page)]
+                )
+            )
+        elif page.route == "/consultas":
+            page.views.append(
+                ft.View(
+                    route="/consultas",
+                    controls=[consultasPage.main(page)]
+                )
+            )
+
         page.update()
 
-    def seleccionar_fecha(e):
-        fecha_txt.value = f"{date_picker.value.day}/{date_picker.value.month}/{date_picker.value.year}"
-        page.update()
-
-    def get_tipos():
-        lista_tipos = []
-        lista_tipos.append(ft.dropdown.Option(text="Perenne", key="Perenne"))
-        lista_tipos.append(ft.dropdown.Option(text="Caduca", key="Caduca"))
-        return lista_tipos
-
-    def crear_arbol(e):
-        nombre = nombre_tf.value
-        tipo = tipos_drop.value
-        altura = altura_tf.value
-        fecha = date_picker.value
-        ddbb.insertar_arbol(nombre, tipo, altura, fecha)
-
-    # OBJETOS
-    nombre_tf = ft.TextField(label="Nombre", width=300)
-    tipos_drop = ft.Dropdown(label="Tipo", width=300, options=get_tipos())
-    altura_tf = ft.TextField(label="Altura", width=300)
-
-    date_picker = ft.DatePicker(on_change=seleccionar_fecha, value=datetime.datetime.now())
-    fecha_txt = ft.Text(f"{date_picker.value.day}/{date_picker.value.month}/{date_picker.value.year}")
-    columna_datos = ft.Column(
-        controls=[ft.Text("ÁRBOLES", size=40),
-                  nombre_tf,
-                  tipos_drop,
-                  altura_tf,
-                  fecha_txt,
-                  ft.FilledButton("SELECCIONAR FECHA", on_click=abrir_selector),
-                  ft.FilledButton("CREAR ÁRBOL", on_click=crear_arbol)
-                  ],
-    )
-
-    page.overlay.append(date_picker)
-    page.add(columna_datos)
+    page.on_route_change = route_change
+    page.go("/formulario")
 
 if __name__ == '__main__':
     ft.app(target=main)
